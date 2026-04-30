@@ -13,7 +13,7 @@
 
 <br/>
 
-[Features](#-features) · [Installation](#-installation) · [Usage](#-usage) · [Contributing](#-contributing)
+[Features](#-features) · [Installation](#-installation) · [Usage](#-usage) · [Roadmap](#-roadmap) · [Contributing](#-contributing)
 
 </div>
 

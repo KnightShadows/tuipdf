@@ -1,15 +1,21 @@
 <div align="center">
 
-<pre>
-████████╗██╗   ██╗██╗██████╗ ██████╗ ███████╗
-   ██╔══╝██║   ██║██║██╔══██╗██╔══██╗██╔════╝
-   ██║   ██║   ██║██║██████╔╝██║  ██║█████╗
-   ██║   ██║   ██║██║██╔═══╝ ██║  ██║██╔══╝
-   ██║   ╚██████╔╝██║██║     ██████╔╝██║
-   ╚═╝    ╚═════╝ ╚═╝╚═╝     ╚═════╝ ╚═╝
-</pre>
+```
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║   ████████╗██╗   ██╗██╗██████╗ ██████╗ ███████╗           ║
+║      ██╔══╝██║   ██║██║██╔══██╗██╔══██╗██╔════╝           ║
+║      ██║   ██║   ██║██║██████╔╝██║  ██║█████╗             ║
+║      ██║   ██║   ██║██║██╔═══╝ ██║  ██║██╔══╝             ║
+║      ██║   ╚██████╔╝██║██║     ██████╔╝██║                ║
+║      ╚═╝    ╚═════╝ ╚═╝╚═╝     ╚═════╝ ╚═╝                ║
+║                                                            ║
+║          ⚡ blazing-fast  🔒 privacy-first  🦀 rust         ║
+║                                                            ║
+╚════════════════════════════════════════════════════════════╝
+```
 
-> **A blazing-fast, privacy-first PDF toolkit for your terminal — powered by Rust.**
+> **A terminal-native PDF toolkit — built in Rust, runs offline, leaves no trace.**
 
 <br/>
 
@@ -28,9 +34,9 @@
 
 ## Overview
 
-**tuipdf** is a terminal-native PDF toolkit built entirely in Rust. Inspired by the convenience of online document tools, it brings essential PDF operations — compression, merging, splitting, and conversion — directly into your command line through a rich, keyboard-driven TUI experience.
+**tuipdf** is a terminal-native PDF toolkit built entirely in Rust. Inspired by the convenience of online document tools, it brings essential PDF operations — compression, merging, splitting, and conversion — directly into your terminal through a rich, keyboard-driven TUI experience.
 
-No uploads. No cloud. No tracking. Your files never leave your machine.
+**No uploads. No cloud. No tracking.** Your files never leave your machine.
 
 Built for developers, power users, and open-source contributors who believe productivity tools should be **fast**, **local**, and **transparent**.
 

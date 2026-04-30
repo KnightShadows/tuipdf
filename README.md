@@ -1,19 +1,6 @@
 <div align="center">
 
-```
-╔════════════════════════════════════════════════════════════╗
-║                                                            ║
-║   ████████╗██╗   ██╗██╗██████╗ ██████╗ ███████╗           ║
-║      ██╔══╝██║   ██║██║██╔══██╗██╔══██╗██╔════╝           ║
-║      ██║   ██║   ██║██║██████╔╝██║  ██║█████╗             ║
-║      ██║   ██║   ██║██║██╔═══╝ ██║  ██║██╔══╝             ║
-║      ██║   ╚██████╔╝██║██║     ██████╔╝██║                ║
-║      ╚═╝    ╚═════╝ ╚═╝╚═╝     ╚═════╝ ╚═╝                ║
-║                                                            ║
-║          ⚡ blazing-fast  🔒 privacy-first  🦀 rust         ║
-║                                                            ║
-╚════════════════════════════════════════════════════════════╝
-```
+# TUIPDF
 
 > **A terminal-native PDF toolkit — built in Rust, runs offline, leaves no trace.**
 
@@ -28,6 +15,10 @@
 
 [Features](#-features) · [Installation](#-installation) · [Usage](#-usage) · [Roadmap](#-roadmap) · [Contributing](#-contributing)
 
+</div>
+
+<div align="center">
+  <img src="assets/preview.png" alt="tuipdf terminal preview" width="700"/>
 </div>
 
 ---

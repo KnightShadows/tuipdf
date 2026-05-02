@@ -1,0 +1,38 @@
+# tuipdf
+# ------
+# A beautifully crafted, terminal-native PDF tool built in Rust.
+# It aims to make compressing PDF files as fast, efficient and flexible
+# as possible directly from your terminal.
+#
+# Authors: KnightShadows Team and individual contributors (see CONTRIBUTORS file)
+#          Aditya Anand <aditya19study@gmail.com> (c) 2025
+# Website: https://github.com/KnightShadows/tuipdf
+# License: MPL-2.0 (see LICENSE file)
+
+[package]
+name = "tuipdf"
+version = "0.1.0"
+edition = "2021"
+description = "A beautifully crafted, terminal-native PDF compressor built in Rust"
+authors = ["Aditya Anand <adityaanand05@users.noreply.github.com>"]
+license = "MPL-2.0"
+repository = "https://github.com/KnightShadows/tuipdf"
+homepage = "https://github.com/KnightShadows/tuipdf"
+readme = "README.md"
+keywords = ["pdf", "compression", "tui", "terminal", "cli"]
+categories = ["command-line-utilities", "compression"]
+
+[[bin]]
+name = "tuipdf"
+path = "src/main.rs"
+
+[dependencies]
+ratatui = { version = "0.30.0", features = ["crossterm_0_29"] }
+crossterm = "0.29.0"
+lopdf = "0.40.0"
+anyhow = "1.0.102"
+clap = { version = "4", features = ["derive"] }
+image = "0.25"
+
+[build-dependencies]
+cc = "1.0"

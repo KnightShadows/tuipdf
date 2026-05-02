@@ -2,14 +2,13 @@
 
 # TUIPDF
 
-> **A terminal-native PDF toolkit — built in Rust, runs offline, leaves no trace.**
+> **A beautifully crafted, terminal-native PDF compressor — built in Rust, powered by MuPDF.**
 
 <br/>
 
 [![Rust](https://img.shields.io/badge/Built%20with-Rust-orange?style=for-the-badge&logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen?style=for-the-badge)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-blue?style=for-the-badge)](CONTRIBUTING.md)
-[![Maintained](https://img.shields.io/badge/Maintained-Yes-success?style=for-the-badge)]()
 
 <br/>
 
@@ -18,18 +17,18 @@
 </div>
 
 <div align="center">
-  <img src="assets/preview.png" alt="tuipdf terminal preview" width="700"/>
+  <img src="assets/image.jpg" alt="tuipdf terminal preview" width="700"/>
 </div>
 
 ---
 
 ## Overview
 
-**tuipdf** is a terminal-native PDF toolkit built entirely in Rust. Inspired by the convenience of online document tools, it brings essential PDF operations — compression, merging, splitting, and conversion — directly into your terminal through a rich, keyboard-driven TUI experience.
+**tuipdf** is a terminal-native PDF tool built entirely in Rust. Inspired by the convenience of professional online document compressors (like iLovePDF and SmallPDF), it brings industry-grade PDF optimization directly into your terminal through a rich, keyboard-driven TUI experience.
 
 **No uploads. No cloud. No tracking.** Your files never leave your machine.
 
-Built for developers, power users, and open-source contributors who believe productivity tools should be **fast**, **local**, and **transparent**.
+Built for developers, power users, and open-source contributors who believe productivity tools should be **fast**, **local**, and **beautiful**.
 
 ---
 
@@ -37,22 +36,38 @@ Built for developers, power users, and open-source contributors who believe prod
 
 | Feature | Description |
 |---------|-------------|
-| 📦 **Compress** | Reduce PDF file size without sacrificing quality |
-| 🔗 **Merge** | Combine multiple PDFs into a single document |
-| ✂️ **Split** | Extract specific pages or ranges from any PDF |
-| 🔄 **Convert** | Convert PDFs to and from other formats |
-| 🖥️ **Interactive TUI** | Keyboard-driven, distraction-free terminal interface |
-| 🔒 **Privacy-first** | 100% local processing — nothing leaves your machine |
-| ⚡ **Blazing fast** | Rust-native performance with zero bloat |
-| 🌐 **Offline-ready** | No internet connection required, ever |
+| 📦 **Industry-Grade Compression** | Utilizes MuPDF's advanced API for optimal PDF size reduction (DPI downsampling, font subsetting, stream optimization). |
+| 🎚️ **Compression Tiers** | Three tailored profiles (Low/Quality, Medium/Balanced, High/Extreme) to fit your needs. |
+| 🖥️ **Interactive TUI** | Keyboard-driven, distraction-free terminal interface with modern aesthetics and smooth animations. |
+| 🔒 **Privacy-first** | 100% local processing — nothing leaves your machine. |
+| ⚡ **Blazing fast** | Rust-native performance combined with MuPDF's C backend. |
+| 🌐 **Offline-ready** | No internet connection required, ever. |
+
+---
+
+## 🛠️ Prerequisites
+
+`tuipdf` relies on the **MuPDF** library for its core compression engine. 
+
+- **Linux (Ubuntu/Debian):** `sudo apt install libmupdf-dev mupdf-tools`
+- **macOS:** `brew install mupdf-tools`
+- **Windows:** MSYS2 with `mingw-w64-x86_64-mupdf` (see setup script)
 
 ---
 
 ## 📦 Installation
 
-### Prerequisites
+### Windows (PowerShell)
 
-- Rust `1.75+` — [Install via rustup](https://rustup.rs/)
+```powershell
+irm https://raw.githubusercontent.com/KnightShadows/tuipdf/main/install_windows.ps1 | iex
+```
+
+### Linux / macOS
+
+```bash
+curl -sSL https://raw.githubusercontent.com/KnightShadows/tuipdf/main/install.sh | bash
+```
 
 ### From Source
 
@@ -61,18 +76,6 @@ git clone https://github.com/KnightShadows/tuipdf.git
 cd tuipdf
 cargo build --release
 ./target/release/tuipdf
-```
-
-### Using Cargo
-
-```bash
-cargo install tuipdf
-```
-
-### Verify Installation
-
-```bash
-tuipdf --version
 ```
 
 ---
@@ -85,24 +88,31 @@ Launch the interactive TUI:
 tuipdf
 ```
 
+### Direct Open
+
+Launch with a file path to instantly load the PDF into the app:
+
+```bash
+tuipdf path/to/document.pdf
+```
+
+### AI-Enhanced Prompt (Experimental)
+
+Use the `--prompt` or `-p` flag to provide specific instructions for the compression run. Currently, this displays in the UI as context for upcoming AI-driven optimization strategies.
+
+```bash
+tuipdf file.pdf --prompt "optimize for web viewing"
+```
+
 ### Keyboard Shortcuts
 
 | Key | Action |
 |-----|--------|
-| `↑` / `↓` | Navigate menu |
-| `Enter` | Select option |
-| `Tab` | Switch panels |
+| `Enter` | Cycle compression levels / Start Compression |
+| `Tab` | Switch UI Focus |
 | `q` | Quit |
-| `?` | Show help |
-| `Esc` | Go back |
-
-### CLI Flags
-
-```bash
-tuipdf --help          # Show all options
-tuipdf --version       # Show version info
-tuipdf open file.pdf   # Open a PDF directly
-```
+| `Esc` | Quit |
+| `Ctrl+C`| Force Quit |
 
 ---
 
@@ -113,58 +123,51 @@ tuipdf open file.pdf   # Open a PDF directly
 | 🔒 Privacy | ✅ Files stay local | ❌ Uploaded to servers |
 | ⚡ Speed | ✅ Instant, native | ❌ Depends on internet |
 | 🌐 Offline Use | ✅ Always works | ❌ Requires connection |
-| 💸 Cost | ✅ Free forever | ❌ Often paywalled |
+| 💸 Cost | ✅ Free forever | ❌ Often paywalled/limited |
 | 🖥️ Workflow | ✅ Stay in terminal | ❌ Switch to browser |
-| 🛡️ Security | ✅ Fully auditable | ❌ Closed source |
+| 🛡️ Quality | ✅ MuPDF backend | ✅ Proprietary backends |
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Crate | Purpose |
+| Component | Purpose |
 |-------|---------|
-| [ratatui](https://github.com/ratatui-org/ratatui) | TUI framework |
+| [ratatui](https://github.com/ratatui-org/ratatui) | Rich TUI framework |
 | [crossterm](https://github.com/crossterm-rs/crossterm) | Cross-platform terminal backend |
-| [pdfium-render](https://github.com/ajrcarey/pdfium-render) | PDF rendering & processing |
+| [MuPDF](https://mupdf.com/) | High-performance C PDF engine |
 | [clap](https://github.com/clap-rs/clap) | CLI argument parsing |
-| [tokio](https://tokio.rs/) | Async runtime |
 
 ---
 
 ## 🗺️ Roadmap
 
-- [x] Project setup & repository structure
-- [x] Interactive TUI welcome screen
-- [ ] PDF viewer (read & navigate PDFs)
-- [ ] PDF compression
-- [ ] PDF merging
-- [ ] PDF splitting
-- [ ] PDF conversion
-- [ ] File picker integration
-- [ ] Configuration file support (`~/.config/tuipdf/config.toml`)
-- [ ] Cross-platform builds (Linux, macOS, Windows)
-- [ ] Homebrew & AUR packages
+**Phase 1: Core Compressor — ✅ Current**
+- [x] High-performance C FFI compression engine (MuPDF integration)
+- [x] Premium TUI with dynamic gradients, active animations, and stats
+- [x] Robust cross-platform build scripts (Windows, Linux, macOS)
+- [x] Tailored image rewriting and compression tiers (Low, Medium, High)
+
+**Phase 2: Conversions & Operations**
+- [ ] PDF to Word
+- [ ] Word to PDF
+- [ ] PDF to Image (JPEG, PNG)
+- [ ] Image to PDF
+- [ ] Merge PDFs
+- [ ] Split PDF
+- [ ] Extract or Remove Pages
+
+**Phase 3: Security & UX**
+- [ ] Protect PDF (Add Password)
+- [ ] Unlock PDF (Remove Password)
+- [ ] Batch Processing Mode (Multiple files at once)
+- [ ] Native File Picker (Select files visually in the terminal)
 
 ---
 
 ## 🤝 Contributing
 
 Contributions are what make open source great. All contributions are welcome — bug fixes, features, docs, or suggestions.
-
-```bash
-# 1. Fork the repository
-# 2. Clone your fork
-git clone https://github.com/YOUR_USERNAME/tuipdf.git
-
-# 3. Create a feature branch
-git checkout -b feature/your-feature-name
-
-# 4. Make your changes and commit
-git commit -m "feat: add your feature"
-
-# 5. Push and open a Pull Request
-git push origin feature/your-feature-name
-```
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
@@ -175,14 +178,6 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 Copyright 2026 KnightShadows Organization & Aditya Anand
 
 Licensed under the [Mozilla Public License 2.0](LICENSE).
-
----
-
-## 🙏 Acknowledgements
-
-- [ratatui](https://github.com/ratatui-org/ratatui) — for the excellent TUI framework
-- The Rust community — for the incredible ecosystem
-- All contributors and users of tuipdf
 
 ---
 

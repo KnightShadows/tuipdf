@@ -24,7 +24,7 @@
 
 ## Overview
 
-**tuipdf** is a terminal-native PDF tool built entirely in Rust. Inspired by the convenience of professional online document compressors (like iLovePDF and SmallPDF), it brings industry-grade PDF optimization directly into your terminal through a rich, keyboard-driven TUI experience.
+**tuipdf** is a terminal-native PDF tool built in Rust and C. It brings industry-grade PDF optimization and management directly into your terminal through a rich, keyboard-driven TUI experience.
 
 **No uploads. No cloud. No tracking.** Your files never leave your machine.
 

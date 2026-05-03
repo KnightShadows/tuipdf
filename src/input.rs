@@ -107,7 +107,11 @@ impl InputField {
         let cleaned = trimmed
             .strip_prefix('"')
             .and_then(|s| s.strip_suffix('"'))
-            .or_else(|| trimmed.strip_prefix('\'').and_then(|s| s.strip_suffix('\'')))
+            .or_else(|| {
+                trimmed
+                    .strip_prefix('\'')
+                    .and_then(|s| s.strip_suffix('\''))
+            })
             .unwrap_or(trimmed);
 
         if cleaned.is_empty() {

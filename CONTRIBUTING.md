@@ -9,26 +9,26 @@ This document serves as a guide for anyone looking to contribute to the project,
 Before diving in, it's helpful to understand how `tuipdf` is structured:
 
 1.  **Frontend (Rust & Ratatui):** The entire user interface, state management, and input handling is written in pure Rust using `ratatui` and `crossterm`.
-2.  **Backend (C & MuPDF):** The actual PDF manipulation (compression, rendering, etc.) is handled by **MuPDF**. We write high-performance C code (in the `c/` directory) and link it to our Rust frontend via FFI (`build.rs`).
+2.  **Backend (Pure Rust Pipeline):** The PDF compression pipeline is implemented entirely in Rust using `lopdf` for PDF parsing, `mozjpeg` for JPEG re-encoding, `flate2` for DEFLATE compression, and `rayon` for parallel processing. The pipeline lives in `src/pipeline/`.
 
 ## 🛠️ Development Setup
 
-To build and run `tuipdf` locally, you need both the Rust toolchain and the MuPDF C libraries.
+To build and run `tuipdf` locally, you need the Rust toolchain and CMake (for building the bundled MozJPEG C library).
 
-### Windows (MSYS2)
-You must use MSYS2 to install the MuPDF dependencies:
+### Windows
+Install CMake:
 ```powershell
-pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-mupdf mingw-w64-ucrt-x86_64-mupdf
+winget install Kitware.CMake
 ```
 
 ### Linux (Debian/Ubuntu)
 ```bash
-sudo apt install libmupdf-dev mupdf-tools build-essential
+sudo apt install build-essential cmake nasm
 ```
 
 ### macOS
 ```bash
-brew install mupdf-tools
+brew install cmake nasm
 ```
 
 Once dependencies are installed, you can build the project:

@@ -12,13 +12,13 @@
 
 set -e
 
-echo "Installing MuPDF via Homebrew for macOS..."
+echo "Installing build dependencies via Homebrew for macOS..."
 if ! command -v brew &> /dev/null; then
     echo "Homebrew not found. Please install it first from https://brew.sh"
     exit 1
 fi
 
-brew install mupdf-tools
+brew install cmake nasm
 
 echo "Building tuipdf in release mode..."
 cargo build --release

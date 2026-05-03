@@ -12,9 +12,9 @@
 
 set -e
 
-echo "Installing MuPDF development headers for Linux..."
+echo "Installing build dependencies for Linux..."
 sudo apt-get update
-sudo apt-get install -y libmupdf-dev mupdf-tools build-essential
+sudo apt-get install -y build-essential cmake nasm
 
 echo "Building tuipdf in release mode..."
 cargo build --release

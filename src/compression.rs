@@ -9,16 +9,14 @@
 // Website: https://github.com/KnightShadows/tuipdf
 // License: MPL-2.0 (see LICENSE file)
 
-use std::fs;
-use std::os::raw::{c_char, c_int, c_uchar};
+use std::path::{Path, PathBuf};
 use std::sync::mpsc;
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
-use std::ffi::CStr;
-
-use anyhow::{anyhow, Result};
 
 use std::fmt;
+
+use crate::pipeline;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CompressionLevel {
@@ -54,32 +52,28 @@ pub enum CompressionMsg {
     Error(String),
 }
 
-
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-enum CCompressionLevel {
-    Low = 0,
-    Medium = 1,
-    High = 2,
+fn level_to_config(level: CompressionLevel, output_dir: PathBuf) -> pipeline::CompressionConfig {
+    match level {
+        CompressionLevel::Low => pipeline::CompressionConfig {
+            quality: 85,
+            dpi_threshold: 200,
+            output_dir,
+            remove_metadata: false,
+        },
+        CompressionLevel::Medium => pipeline::CompressionConfig {
+            quality: 75,
+            dpi_threshold: 150,
+            output_dir,
+            remove_metadata: false,
+        },
+        CompressionLevel::High => pipeline::CompressionConfig {
+            quality: 50,
+            dpi_threshold: 100,
+            output_dir,
+            remove_metadata: true,
+        },
+    }
 }
-
-#[repr(C)]
-struct CCompressResult {
-    data: *mut c_uchar,
-    size: usize,
-    error_code: c_int,
-    error_msg: [c_char; 256],
-}
-
-extern "C" {
-    fn compress_pdf(
-        input: *const c_uchar,
-        input_size: usize,
-        level: CCompressionLevel,
-    ) -> CCompressResult;
-    fn free_compress_result(result: *mut CCompressResult);
-}
-
 
 pub fn start(
     input: String,
@@ -89,63 +83,58 @@ pub fn start(
     let (tx, rx) = mpsc::channel();
 
     let handle = thread::spawn(move || {
-        let result = (|| -> Result<(u64, u64)> {
-            let original_data = fs::read(&input)?;
-            let original_size = original_data.len() as u64;
+        let result = (|| -> Result<(u64, u64), String> {
+            let input_path = Path::new(&input);
+
+            let _ = tx.send(CompressionMsg::Progress(0.1));
+
+            let output_path = Path::new(&output);
+            let output_dir = output_path
+                .parent()
+                .unwrap_or_else(|| Path::new("."))
+                .to_path_buf();
+
+            let config = level_to_config(level, output_dir);
 
             let _ = tx.send(CompressionMsg::Progress(0.2));
-            
-            let compressed_data = compress_pdf_ffi(&original_data, level)?;
-            
-            let _ = tx.send(CompressionMsg::Progress(0.8));
-            fs::write(&output, &compressed_data)?;
-            let compressed_size = compressed_data.len() as u64;
 
-            Ok((original_size, compressed_size))
+            let stats = pipeline::compress_pdf(input_path, &config).map_err(|e| e.to_string())?;
+
+            let _ = tx.send(CompressionMsg::Progress(0.9));
+
+            let _expected_name = output_path
+                .file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or("compressed.pdf");
+            let pipeline_output = config.output_dir.join(format!(
+                "{}_compressed.pdf",
+                input_path
+                    .file_stem()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or("output")
+            ));
+
+            if pipeline_output != output_path && pipeline_output.exists() {
+                let _ = std::fs::rename(&pipeline_output, output_path);
+            }
+
+            Ok((stats.original_bytes, stats.compressed_bytes))
         })();
 
         match result {
             Ok((original, compressed)) => {
                 let _ = tx.send(CompressionMsg::Progress(1.0));
                 thread::sleep(Duration::from_millis(200));
-                let _ = tx.send(CompressionMsg::Done { original, compressed });
+                let _ = tx.send(CompressionMsg::Done {
+                    original,
+                    compressed,
+                });
             }
             Err(e) => {
-                let _ = tx.send(CompressionMsg::Error(e.to_string()));
+                let _ = tx.send(CompressionMsg::Error(e));
             }
         }
     });
 
     (handle, rx)
-}
-
-pub fn compress_pdf_ffi(input: &[u8], level: CompressionLevel) -> Result<Vec<u8>> {
-    let c_level = match level {
-        CompressionLevel::Low => CCompressionLevel::Low,
-        CompressionLevel::Medium => CCompressionLevel::Medium,
-        CompressionLevel::High => CCompressionLevel::High,
-    };
-
-    unsafe {
-        let mut res = compress_pdf(input.as_ptr(), input.len(), c_level);
-
-        if res.error_code != 0 {
-            let msg = CStr::from_ptr(res.error_msg.as_ptr())
-                .to_string_lossy()
-                .into_owned();
-            free_compress_result(&mut res);
-            return Err(anyhow!("MuPDF Error: {}", msg));
-        }
-
-        if res.data.is_null() {
-            return Err(anyhow!("MuPDF returned null data without error code"));
-        }
-
-        let slice = std::slice::from_raw_parts(res.data, res.size);
-        let out = slice.to_vec();
-
-        free_compress_result(&mut res);
-        
-        Ok(out)
-    }
 }

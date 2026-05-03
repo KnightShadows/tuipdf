@@ -26,23 +26,14 @@ if (!(Get-Command cargo -ErrorAction SilentlyContinue)) {
     Write-Info "Rust found: $(rustc --version)"
 }
 
-# ── 2. Check Build Environment / Dependencies ───────────────────────────────
-$hasGcc = (Get-Command gcc -ErrorAction SilentlyContinue)
-
-if ($hasGcc) {
-    Write-Info "Existing GCC environment found. We will attempt to build using your current setup."
-    Write-Warn "(Ensure you have MuPDF C-headers installed via your package manager.)"
+# ── 2. Check for CMake (needed by mozjpeg-sys) ──────────────────────────────
+if (!(Get-Command cmake -ErrorAction SilentlyContinue)) {
+    Write-Warn "CMake not found. Attempting to install via winget..."
+    winget install -e --id Kitware.CMake
+    Write-Warn "Please restart your terminal and re-run this script after CMake is installed."
+    exit 1
 } else {
-    Write-Warn "No GCC environment found. Checking for MSYS2 to set up MuPDF dependencies..."
-    if (!(Test-Path C:\msys64\usr\bin\pacman.exe)) {
-        Write-Info "MSYS2 not found at C:\msys64. Installing via winget..."
-        winget install -e --id MSYS2.MSYS2
-        Write-Err "Please restart your terminal and run this script again after MSYS2 is installed."
-        exit 1
-    }
-
-    Write-Info "MSYS2 found. Installing GCC and MuPDF toolchain via pacman..."
-    & C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-mupdf mingw-w64-ucrt-x86_64-mupdf"
+    Write-Info "CMake found: $(cmake --version | Select-Object -First 1)"
 }
 
 # ── 3. Install tuipdf ───────────────────────────────────────────────────────

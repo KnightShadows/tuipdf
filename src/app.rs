@@ -24,7 +24,6 @@ pub enum Focus {
 
 pub use crate::compression::CompressionLevel;
 
-
 #[derive(Debug)]
 pub enum Status {
     Idle,
@@ -78,7 +77,10 @@ impl App {
             self.output_path.clear();
             return;
         }
-        if let Some(stem) = input.strip_suffix(".pdf").or_else(|| input.strip_suffix(".PDF")) {
+        if let Some(stem) = input
+            .strip_suffix(".pdf")
+            .or_else(|| input.strip_suffix(".PDF"))
+        {
             self.output_path = format!("{}_compressed.pdf", stem);
         } else {
             self.output_path = format!("{}_compressed.pdf", input);
@@ -143,8 +145,9 @@ impl App {
                 Err(mpsc::TryRecvError::Empty) => break,
                 Err(mpsc::TryRecvError::Disconnected) => {
                     if matches!(self.status, Status::Compressing) {
-                        self.status =
-                            Status::Error("Compression thread disconnected unexpectedly.".to_string());
+                        self.status = Status::Error(
+                            "Compression thread disconnected unexpectedly.".to_string(),
+                        );
                     }
                     self.cleanup_thread();
                     break;

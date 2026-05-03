@@ -10,16 +10,15 @@
 // License: MPL-2.0 (see LICENSE file)
 
 use ratatui::{
+    Frame,
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     symbols,
     text::{Line, Span},
     widgets::{Block, Borders, Gauge, Paragraph, Wrap},
-    Frame,
 };
 
 use crate::app::{App, Focus, Status};
-
 
 const BG: Color = Color::Rgb(13, 13, 23);
 const SURFACE: Color = Color::Rgb(22, 22, 38);
@@ -49,18 +48,13 @@ const FOOTER_BG: Color = Color::Rgb(18, 18, 32);
 const FOOTER_KEY: Color = ACCENT_1;
 const FOOTER_SEP: Color = Color::Rgb(50, 50, 75);
 
-
 const SPINNER: &[&str] = &["◜", "◠", "◝", "◞", "◡", "◟"];
 const DOT: &str = "•";
-
 
 pub fn draw(f: &mut Frame, app: &App) {
     let area = f.area();
 
-    f.render_widget(
-        Block::default().style(Style::default().bg(BG)),
-        area,
-    );
+    f.render_widget(Block::default().style(Style::default().bg(BG)), area);
 
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -76,10 +70,8 @@ pub fn draw(f: &mut Frame, app: &App) {
     draw_footer(f, app, chunks[2]);
 }
 
-
 fn draw_header(f: &mut Frame, _app: &App, area: Rect) {
-    let block = Block::default()
-        .style(Style::default().bg(SURFACE));
+    let block = Block::default().style(Style::default().bg(SURFACE));
     f.render_widget(block, area);
 
     let inner = Layout::default()
@@ -93,7 +85,6 @@ fn draw_header(f: &mut Frame, _app: &App, area: Rect) {
         ])
         .split(area);
 
-
     let c_t = ACCENT_1;
     let c_u = Color::Rgb(120, 150, 255);
     let c_i = ACCENT_2;
@@ -103,31 +94,54 @@ fn draw_header(f: &mut Frame, _app: &App, area: Rect) {
 
     let bold = Modifier::BOLD;
 
-
     let art: Vec<Vec<(&str, Color)>> = vec![
         vec![
-            ("  ████████╗", c_t), ("██╗   ██╗", c_u), ("██╗", c_i),
-            ("██████╗ ", c_p), ("██████╗ ", c_d), ("███████╗", c_f),
+            ("  ████████╗", c_t),
+            ("██╗   ██╗", c_u),
+            ("██╗", c_i),
+            ("██████╗ ", c_p),
+            ("██████╗ ", c_d),
+            ("███████╗", c_f),
         ],
         vec![
-            ("  ╚══██╔══╝", c_t), ("██║   ██║", c_u), ("██║", c_i),
-            ("██╔══██╗", c_p), ("██╔══██╗", c_d), ("██╔════╝", c_f),
+            ("  ╚══██╔══╝", c_t),
+            ("██║   ██║", c_u),
+            ("██║", c_i),
+            ("██╔══██╗", c_p),
+            ("██╔══██╗", c_d),
+            ("██╔════╝", c_f),
         ],
         vec![
-            ("     ██║   ", c_t), ("██║   ██║", c_u), ("██║", c_i),
-            ("██████╔╝", c_p), ("██║  ██║", c_d), ("█████╗  ", c_f),
+            ("     ██║   ", c_t),
+            ("██║   ██║", c_u),
+            ("██║", c_i),
+            ("██████╔╝", c_p),
+            ("██║  ██║", c_d),
+            ("█████╗  ", c_f),
         ],
         vec![
-            ("     ██║   ", c_t), ("██║   ██║", c_u), ("██║", c_i),
-            ("██╔═══╝ ", c_p), ("██║  ██║", c_d), ("██╔══╝  ", c_f),
+            ("     ██║   ", c_t),
+            ("██║   ██║", c_u),
+            ("██║", c_i),
+            ("██╔═══╝ ", c_p),
+            ("██║  ██║", c_d),
+            ("██╔══╝  ", c_f),
         ],
         vec![
-            ("     ██║   ", c_t), ("╚██████╔╝", c_u), ("██║", c_i),
-            ("██║     ", c_p), ("██████╔╝", c_d), ("██║     ", c_f),
+            ("     ██║   ", c_t),
+            ("╚██████╔╝", c_u),
+            ("██║", c_i),
+            ("██║     ", c_p),
+            ("██████╔╝", c_d),
+            ("██║     ", c_f),
         ],
         vec![
-            ("     ╚═╝    ", c_t), ("╚═════╝ ", c_u), ("╚═╝", c_i),
-            ("╚═╝     ", c_p), ("╚═════╝ ", c_d), ("╚═╝     ", c_f),
+            ("     ╚═╝    ", c_t),
+            ("╚═════╝ ", c_u),
+            ("╚═╝", c_i),
+            ("╚═╝     ", c_p),
+            ("╚═════╝ ", c_d),
+            ("╚═╝     ", c_f),
         ],
     ];
 
@@ -155,10 +169,18 @@ fn draw_header(f: &mut Frame, _app: &App, area: Rect) {
         Span::styled("⚙ ", Style::default().fg(ACCENT_2)),
         Span::styled("PDF Compression Tool ", Style::default().fg(TEXT_DIM)),
         Span::styled("─ ", Style::default().fg(BORDER_UNFOCUSED)),
-        Span::styled("powered by ", Style::default().fg(TEXT_MUTED).add_modifier(Modifier::ITALIC)),
-        Span::styled("MuPDF", Style::default().fg(ACCENT_1).add_modifier(Modifier::BOLD)),
-        Span::styled(" & ", Style::default().fg(TEXT_MUTED)),
-        Span::styled("Rust", Style::default().fg(Color::Rgb(255, 120, 50)).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            "powered by ",
+            Style::default()
+                .fg(TEXT_MUTED)
+                .add_modifier(Modifier::ITALIC),
+        ),
+        Span::styled(
+            "Rust",
+            Style::default()
+                .fg(Color::Rgb(255, 120, 50))
+                .add_modifier(Modifier::BOLD),
+        ),
     ]);
     f.render_widget(
         Paragraph::new(tagline)
@@ -178,7 +200,6 @@ fn draw_header(f: &mut Frame, _app: &App, area: Rect) {
         inner[3],
     );
 }
-
 
 fn draw_main(f: &mut Frame, app: &App, area: Rect) {
     let has_prompt = app.prompt.is_some();
@@ -207,7 +228,10 @@ fn draw_main(f: &mut Frame, app: &App, area: Rect) {
 
     let section_label = Line::from(vec![
         Span::styled("  ┌ ", Style::default().fg(ACCENT_2)),
-        Span::styled("FILE CONFIGURATION", Style::default().fg(ACCENT_1).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            "FILE CONFIGURATION",
+            Style::default().fg(ACCENT_1).add_modifier(Modifier::BOLD),
+        ),
     ]);
     f.render_widget(Paragraph::new(section_label), chunks[idx]);
     idx += 1;
@@ -236,10 +260,13 @@ fn draw_main(f: &mut Frame, app: &App, area: Rect) {
     draw_status_area(f, app, chunks[idx]);
 }
 
-
 fn draw_input_field(f: &mut Frame, app: &App, area: Rect) {
     let focused = app.focus == Focus::InputPath;
-    let border_color = if focused { BORDER_FOCUSED } else { BORDER_UNFOCUSED };
+    let border_color = if focused {
+        BORDER_FOCUSED
+    } else {
+        BORDER_UNFOCUSED
+    };
 
     let icon = if focused { "📂" } else { "📄" };
     let label = if focused {
@@ -269,12 +296,16 @@ fn draw_input_field(f: &mut Frame, app: &App, area: Rect) {
     let text = if value.is_empty() && !focused {
         Line::from(Span::styled(
             "  Drop or type a PDF file path…",
-            Style::default().fg(TEXT_MUTED).add_modifier(Modifier::ITALIC),
+            Style::default()
+                .fg(TEXT_MUTED)
+                .add_modifier(Modifier::ITALIC),
         ))
     } else if value.is_empty() && focused {
         Line::from(Span::styled(
             "  Start typing…",
-            Style::default().fg(TEXT_MUTED).add_modifier(Modifier::ITALIC),
+            Style::default()
+                .fg(TEXT_MUTED)
+                .add_modifier(Modifier::ITALIC),
         ))
     } else {
         Line::from(Span::styled(display, Style::default().fg(TEXT_PRIMARY)))
@@ -290,7 +321,6 @@ fn draw_input_field(f: &mut Frame, app: &App, area: Rect) {
         }
     }
 }
-
 
 fn draw_output_field(f: &mut Frame, app: &App, area: Rect) {
     let size_info = match app.input_file_size() {
@@ -313,7 +343,9 @@ fn draw_output_field(f: &mut Frame, app: &App, area: Rect) {
     let text = if app.output_path.is_empty() {
         Line::from(Span::styled(
             "  Auto-generated from input…",
-            Style::default().fg(TEXT_MUTED).add_modifier(Modifier::ITALIC),
+            Style::default()
+                .fg(TEXT_MUTED)
+                .add_modifier(Modifier::ITALIC),
         ))
     } else {
         Line::from(Span::styled(
@@ -325,10 +357,13 @@ fn draw_output_field(f: &mut Frame, app: &App, area: Rect) {
     f.render_widget(Paragraph::new(text).block(block), area);
 }
 
-
 fn draw_compression_levels(f: &mut Frame, app: &App, area: Rect) {
     let focused = app.focus == Focus::CompressionLevel;
-    let border_color = if focused { BORDER_FOCUSED } else { BORDER_UNFOCUSED };
+    let border_color = if focused {
+        BORDER_FOCUSED
+    } else {
+        BORDER_UNFOCUSED
+    };
 
     let block = Block::default()
         .title(Span::styled(
@@ -343,9 +378,24 @@ fn draw_compression_levels(f: &mut Frame, app: &App, area: Rect) {
         .style(Style::default().bg(SURFACE));
 
     let levels = [
-        (crate::app::CompressionLevel::Low, "Low", "Quality", ACCENT_1),
-        (crate::app::CompressionLevel::Medium, "Medium", "Balanced", ACCENT_2),
-        (crate::app::CompressionLevel::High, "High", "Max Save", ACCENT_3),
+        (
+            crate::app::CompressionLevel::Low,
+            "Low",
+            "Quality",
+            ACCENT_1,
+        ),
+        (
+            crate::app::CompressionLevel::Medium,
+            "Medium",
+            "Balanced",
+            ACCENT_2,
+        ),
+        (
+            crate::app::CompressionLevel::High,
+            "High",
+            "Max Save",
+            ACCENT_3,
+        ),
     ];
 
     let mut spans: Vec<Span> = Vec::new();
@@ -379,7 +429,9 @@ fn draw_compression_levels(f: &mut Frame, app: &App, area: Rect) {
     if focused {
         spans.push(Span::styled(
             "  ← Enter to toggle →",
-            Style::default().fg(TEXT_MUTED).add_modifier(Modifier::ITALIC),
+            Style::default()
+                .fg(TEXT_MUTED)
+                .add_modifier(Modifier::ITALIC),
         ));
     }
 
@@ -390,7 +442,6 @@ fn draw_compression_levels(f: &mut Frame, app: &App, area: Rect) {
         area,
     );
 }
-
 
 fn draw_prompt(f: &mut Frame, app: &App, area: Rect) {
     if let Some(ref prompt) = app.prompt {
@@ -406,12 +457,14 @@ fn draw_prompt(f: &mut Frame, app: &App, area: Rect) {
     }
 }
 
-
 fn draw_status_area(f: &mut Frame, app: &App, area: Rect) {
     match &app.status {
         Status::Idle => draw_idle_action(f, app, area),
         Status::Compressing => draw_compressing(f, app, area),
-        Status::Done { original, compressed } => draw_done(f, *original, *compressed, area),
+        Status::Done {
+            original,
+            compressed,
+        } => draw_done(f, *original, *compressed, area),
         Status::Error(msg) => draw_error(f, msg, area),
     }
 }
@@ -436,18 +489,21 @@ fn draw_idle_action(f: &mut Frame, app: &App, area: Rect) {
             .style(Style::default().bg(SURFACE_ALT));
 
         let btn_text = Line::from(vec![
-            Span::styled(" ▶ ", Style::default().fg(ACCENT_1).add_modifier(Modifier::BOLD)),
+            Span::styled(
+                " ▶ ",
+                Style::default().fg(ACCENT_1).add_modifier(Modifier::BOLD),
+            ),
             Span::styled(
                 " COMPRESS ",
-                Style::default()
-                    .fg(ACCENT_1)
-                    .add_modifier(Modifier::BOLD),
+                Style::default().fg(ACCENT_1).add_modifier(Modifier::BOLD),
             ),
             Span::styled(" ⏎ ", Style::default().fg(TEXT_DIM)),
         ]);
 
         f.render_widget(
-            Paragraph::new(btn_text).block(block).alignment(Alignment::Center),
+            Paragraph::new(btn_text)
+                .block(block)
+                .alignment(Alignment::Center),
             v_chunks[1],
         );
     } else {
@@ -463,7 +519,9 @@ fn draw_idle_action(f: &mut Frame, app: &App, area: Rect) {
         ));
 
         f.render_widget(
-            Paragraph::new(btn_text).block(block).alignment(Alignment::Center),
+            Paragraph::new(btn_text)
+                .block(block)
+                .alignment(Alignment::Center),
             v_chunks[1],
         );
     }
@@ -501,7 +559,10 @@ fn draw_compressing(f: &mut Frame, app: &App, area: Rect) {
     };
 
     let status_line = Line::from(vec![
-        Span::styled(format!("  {} ", spinner), Style::default().fg(ACCENT_1).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            format!("  {} ", spinner),
+            Style::default().fg(ACCENT_1).add_modifier(Modifier::BOLD),
+        ),
         Span::styled(phase_text, Style::default().fg(TEXT_PRIMARY)),
     ]);
     f.render_widget(Paragraph::new(status_line), inner[0]);
@@ -574,14 +635,21 @@ fn draw_done(f: &mut Frame, original: u64, compressed: u64, area: Rect) {
                 "Compression Complete",
                 Style::default().fg(SUCCESS).add_modifier(Modifier::BOLD),
             ),
-            Span::styled(format!("  — {}", verdict), Style::default().fg(verdict_color).add_modifier(Modifier::ITALIC)),
+            Span::styled(
+                format!("  — {}", verdict),
+                Style::default()
+                    .fg(verdict_color)
+                    .add_modifier(Modifier::ITALIC),
+            ),
         ]),
         Line::from(""),
         Line::from(vec![
             Span::styled("   📦 Original    ", Style::default().fg(TEXT_DIM)),
             Span::styled(
                 format_size(original),
-                Style::default().fg(TEXT_PRIMARY).add_modifier(Modifier::BOLD),
+                Style::default()
+                    .fg(TEXT_PRIMARY)
+                    .add_modifier(Modifier::BOLD),
             ),
         ]),
         Line::from(vec![
@@ -603,16 +671,23 @@ fn draw_done(f: &mut Frame, original: u64, compressed: u64, area: Rect) {
             ),
         ]),
         Line::from(""),
-        Line::from(build_savings_bar(pct_saved, area.width.saturating_sub(8) as usize)),
+        Line::from(build_savings_bar(
+            pct_saved,
+            area.width.saturating_sub(8) as usize,
+        )),
         Line::from(""),
         Line::from(Span::styled(
             "  Press Enter to compress again  •  q to quit",
-            Style::default().fg(TEXT_MUTED).add_modifier(Modifier::ITALIC),
+            Style::default()
+                .fg(TEXT_MUTED)
+                .add_modifier(Modifier::ITALIC),
         )),
     ];
 
     f.render_widget(
-        Paragraph::new(lines).block(block).wrap(Wrap { trim: false }),
+        Paragraph::new(lines)
+            .block(block)
+            .wrap(Wrap { trim: false }),
         v_chunks[1],
     );
 }
@@ -624,14 +699,8 @@ fn build_savings_bar(pct_saved: f64, width: usize) -> Vec<Span<'static>> {
 
     vec![
         Span::styled("   ", Style::default()),
-        Span::styled(
-            "█".repeat(filled),
-            Style::default().fg(SUCCESS),
-        ),
-        Span::styled(
-            "░".repeat(empty),
-            Style::default().fg(GAUGE_BG),
-        ),
+        Span::styled("█".repeat(filled), Style::default().fg(SUCCESS)),
+        Span::styled("░".repeat(empty), Style::default().fg(GAUGE_BG)),
         Span::styled(
             format!(" {:.1}% saved", pct_saved),
             Style::default().fg(SUCCESS).add_modifier(Modifier::BOLD),
@@ -662,7 +731,9 @@ fn draw_error(f: &mut Frame, msg: &str, area: Rect) {
             Span::styled("  ❌ ", Style::default().fg(ERROR_COLOR)),
             Span::styled(
                 "Compression Failed",
-                Style::default().fg(ERROR_COLOR).add_modifier(Modifier::BOLD),
+                Style::default()
+                    .fg(ERROR_COLOR)
+                    .add_modifier(Modifier::BOLD),
             ),
         ]),
         Line::from(""),
@@ -673,21 +744,19 @@ fn draw_error(f: &mut Frame, msg: &str, area: Rect) {
         Line::from(""),
         Line::from(Span::styled(
             "  Press any key to dismiss",
-            Style::default().fg(TEXT_MUTED).add_modifier(Modifier::ITALIC),
+            Style::default()
+                .fg(TEXT_MUTED)
+                .add_modifier(Modifier::ITALIC),
         )),
     ];
 
     f.render_widget(Paragraph::new(lines).block(block), v_chunks[1]);
 }
 
-
 fn draw_footer(f: &mut Frame, app: &App, area: Rect) {
     let inner = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Length(1),
-            Constraint::Length(1),
-        ])
+        .constraints([Constraint::Length(1), Constraint::Length(1)])
         .split(area);
 
     let sep_width = area.width as usize;
@@ -703,16 +772,25 @@ fn draw_footer(f: &mut Frame, app: &App, area: Rect) {
     let is_compressing = matches!(app.status, Status::Compressing);
 
     let shortcuts = vec![
-        Span::styled(" ⏎ ", Style::default().fg(FOOTER_KEY).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            " ⏎ ",
+            Style::default().fg(FOOTER_KEY).add_modifier(Modifier::BOLD),
+        ),
         Span::styled(
             if is_compressing { "…" } else { "Compress" },
             Style::default().fg(TEXT_DIM),
         ),
         Span::styled(format!("  {}  ", DOT), Style::default().fg(FOOTER_SEP)),
-        Span::styled("⇥ ", Style::default().fg(FOOTER_KEY).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            "⇥ ",
+            Style::default().fg(FOOTER_KEY).add_modifier(Modifier::BOLD),
+        ),
         Span::styled("Navigate", Style::default().fg(TEXT_DIM)),
         Span::styled(format!("  {}  ", DOT), Style::default().fg(FOOTER_SEP)),
-        Span::styled("Esc ", Style::default().fg(FOOTER_KEY).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            "Esc ",
+            Style::default().fg(FOOTER_KEY).add_modifier(Modifier::BOLD),
+        ),
         Span::styled("Quit", Style::default().fg(TEXT_DIM)),
     ];
 
@@ -723,7 +801,6 @@ fn draw_footer(f: &mut Frame, app: &App, area: Rect) {
         inner[1],
     );
 }
-
 
 fn format_size(bytes: u64) -> String {
     const KB: f64 = 1024.0;

@@ -38,9 +38,6 @@ use app::{Focus, Status};
 struct Cli {
     #[arg(value_name = "FILE")]
     file: Option<String>,
-
-    #[arg(short, long, value_name = "INSTRUCTION")]
-    prompt: Option<String>,
 }
 
 fn main() -> Result<()> {
@@ -67,10 +64,6 @@ fn main() -> Result<()> {
     if let Some(ref path) = cli.file {
         app.input_field.paste(path);
         app.derive_output_path();
-    }
-
-    if let Some(ref prompt) = cli.prompt {
-        app.prompt = Some(prompt.clone());
     }
 
     loop {

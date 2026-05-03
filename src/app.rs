@@ -42,7 +42,6 @@ pub struct App {
     pub compression_rx: Option<mpsc::Receiver<CompressionMsg>>,
     pub should_quit: bool,
     pub tick: usize,
-    pub prompt: Option<String>,
     pub compression_level: CompressionLevel,
 }
 
@@ -58,7 +57,6 @@ impl App {
             compression_rx: None,
             should_quit: false,
             tick: 0,
-            prompt: None,
             compression_level: CompressionLevel::Medium,
         }
     }

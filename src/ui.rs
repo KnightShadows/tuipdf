@@ -202,20 +202,14 @@ fn draw_header(f: &mut Frame, _app: &App, area: Rect) {
 }
 
 fn draw_main(f: &mut Frame, app: &App, area: Rect) {
-    let has_prompt = app.prompt.is_some();
-
-    let mut constraints = vec![
+    let constraints = vec![
         Constraint::Length(1),
         Constraint::Length(3),
         Constraint::Length(3),
         Constraint::Length(1),
         Constraint::Length(3),
+        Constraint::Min(5),
     ];
-
-    if has_prompt {
-        constraints.push(Constraint::Length(2));
-    }
-    constraints.push(Constraint::Min(5));
 
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -251,11 +245,6 @@ fn draw_main(f: &mut Frame, app: &App, area: Rect) {
 
     draw_compression_levels(f, app, chunks[idx]);
     idx += 1;
-
-    if has_prompt {
-        draw_prompt(f, app, chunks[idx]);
-        idx += 1;
-    }
 
     draw_status_area(f, app, chunks[idx]);
 }
@@ -443,19 +432,7 @@ fn draw_compression_levels(f: &mut Frame, app: &App, area: Rect) {
     );
 }
 
-fn draw_prompt(f: &mut Frame, app: &App, area: Rect) {
-    if let Some(ref prompt) = app.prompt {
-        let text = Line::from(vec![
-            Span::styled("  💡 ", Style::default()),
-            Span::styled(
-                "Instruction: ",
-                Style::default().fg(ACCENT_2).add_modifier(Modifier::ITALIC),
-            ),
-            Span::styled(prompt, Style::default().fg(TEXT_PRIMARY)),
-        ]);
-        f.render_widget(Paragraph::new(text), area);
-    }
-}
+
 
 fn draw_status_area(f: &mut Frame, app: &App, area: Rect) {
     match &app.status {

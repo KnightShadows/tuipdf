@@ -109,13 +109,6 @@ Launch with a file path to instantly load the PDF into the app:
 tuipdf path/to/document.pdf
 ```
 
-### AI-Enhanced Prompt (Experimental)
-
-Use the `--prompt` or `-p` flag to provide specific instructions for the compression run. Currently, this displays in the UI as context for upcoming AI-driven optimization strategies.
-
-```bash
-tuipdf file.pdf --prompt "optimize for web viewing"
-```
 
 ### Keyboard Shortcuts
 

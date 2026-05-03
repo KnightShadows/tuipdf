@@ -15,13 +15,6 @@ use lopdf::{Document, Object, ObjectId};
 
 use crate::pipeline::error::PipelineError;
 
-/// Number of color components detected from the PDF ColorSpace entry.
-/// This is critical for correctly interpreting raw pixel bytes.
-///
-///  - 0 = unknown / unsupported (Indexed, Separation, DeviceN, etc.) → skip
-///  - 1 = grayscale (DeviceGray, CalGray, ICCBased N=1)
-///  - 3 = RGB      (DeviceRGB, CalRGB, ICCBased N=3, Lab)
-///  - 4 = CMYK     (DeviceCMYK, ICCBased N=4)
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ColorInfo {
     pub components: u8,
@@ -165,8 +158,6 @@ fn classify_image(dict: &lopdf::Dictionary, doc: &Document) -> ContentType {
     let bits_per_component = get_u32(dict, b"BitsPerComponent", doc).unwrap_or(8) as u8;
     let color = detect_color_info(dict, doc);
 
-    // If we can't determine the color space, don't attempt compression —
-    // guessing wrong causes discoloration or black output.
     if color.components == 0 {
         log::info!(
             "Skipping image {}x{}: unsupported or unrecognized color space",
@@ -227,18 +218,10 @@ fn classify_image(dict: &lopdf::Dictionary, doc: &Document) -> ContentType {
     ContentType::Unknown
 }
 
-/// Detect the color space of an image and return structured color information.
-///
-/// Returns `ColorInfo` with:
-///  - `components = 1` for DeviceGray, CalGray, ICCBased N=1
-///  - `components = 3` for DeviceRGB, CalRGB, ICCBased N=3, Lab
-///  - `components = 4` for DeviceCMYK, ICCBased N=4
-///  - `components = 0` for Indexed, Separation, DeviceN, or unknown
-///    (these are skipped to avoid discoloration)
+
 fn detect_color_info(dict: &lopdf::Dictionary, doc: &Document) -> ColorInfo {
     let cs_obj = match dict.get(b"ColorSpace") {
         Ok(obj) => obj,
-        // No ColorSpace entry — could be a mask or stencil image; skip it.
         Err(_) => return ColorInfo::unknown(),
     };
 
@@ -249,7 +232,6 @@ fn resolve_color_info(cs_obj: &Object, doc: &Document) -> ColorInfo {
     let resolved = resolve_object(cs_obj, doc);
 
     match resolved {
-        // Simple name: /DeviceGray, /DeviceRGB, /DeviceCMYK, etc.
         Object::Name(n) => match n.as_slice() {
             b"DeviceGray" | b"CalGray" | b"G" => ColorInfo::gray(),
             b"DeviceRGB" | b"CalRGB" | b"RGB" => ColorInfo::rgb(),
@@ -259,7 +241,6 @@ fn resolve_color_info(cs_obj: &Object, doc: &Document) -> ColorInfo {
                 ColorInfo::unknown()
             }
         },
-        // Array form: [/ICCBased <ref>], [/CalGray <dict>], [/Indexed ...], etc.
         Object::Array(arr) => {
             if let Some(first) = arr.first() {
                 let first_resolved = resolve_object(first, doc);
@@ -268,9 +249,9 @@ fn resolve_color_info(cs_obj: &Object, doc: &Document) -> ColorInfo {
                         b"DeviceGray" | b"CalGray" | b"G" => ColorInfo::gray(),
                         b"DeviceRGB" | b"CalRGB" | b"RGB" => ColorInfo::rgb(),
                         b"DeviceCMYK" | b"CMYK" => ColorInfo::cmyk(),
-                        b"Lab" => ColorInfo::rgb(), // Lab has 3 components, treated as RGB after conversion
+                        b"Lab" => ColorInfo::rgb(),
                         b"ICCBased" => {
-                            // Check the ICC profile stream's /N parameter
+
                             if let Some(profile_ref) = arr.get(1) {
                                 let profile_obj = resolve_object(profile_ref, doc);
                                 if let Object::Stream(profile_stream) = profile_obj
@@ -287,8 +268,6 @@ fn resolve_color_info(cs_obj: &Object, doc: &Document) -> ColorInfo {
                             }
                             ColorInfo::unknown()
                         }
-                        // Indexed / Separation / DeviceN — complex palette/spot-color
-                        // spaces that require lookup tables. Skip to avoid discoloration.
                         b"Indexed" | b"I" => {
                             log::info!("Skipping Indexed color space image (palette-based)");
                             ColorInfo::unknown()

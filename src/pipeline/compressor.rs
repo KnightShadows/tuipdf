@@ -85,9 +85,6 @@ pub fn compress_stream(
             dpi_threshold,
         )),
 
-        // Content streams (page operators) must NEVER be recompressed.
-        // They are tiny deflated text and recompressing them with the wrong
-        // format (raw DEFLATE vs zlib) corrupts the PDF, producing blank pages.
         ContentType::TextStream => None,
 
         ContentType::EmbeddedFont => None,
@@ -107,8 +104,6 @@ fn compress_jpeg_image(
     quality: u8,
     dpi_threshold: u32,
 ) -> Result<CompressedData, String> {
-    // For CMYK JPEGs, the `image` crate may decode incorrectly (treating
-    // CMYK channels as RGBA). Skip compression to avoid discoloration.
     if color.is_cmyk {
         return Err("CMYK JPEG — skipping to preserve colors".to_string());
     }
@@ -117,8 +112,6 @@ fn compress_jpeg_image(
     let img = maybe_downsample(img, dpi, dpi_threshold);
     let (new_w, new_h) = img.dimensions();
 
-    // Detect if the source is grayscale — encode as grayscale JPEG to
-    // preserve color space and avoid bloating single-channel images to 3x.
     let is_gray = color.is_grayscale
         || matches!(
             img,
@@ -235,17 +228,6 @@ fn load_image_from_bytes(data: &[u8]) -> Result<DynamicImage, String> {
         .map_err(|e| format!("Failed to decode image: {e}"))
 }
 
-/// Construct a `DynamicImage` from raw (decompressed) pixel bytes using the
-/// PDF dictionary metadata (`Width`, `Height`, `BitsPerComponent`, `ColorSpace`).
-///
-/// The `color` parameter tells us exactly how many bytes per pixel and what
-/// the channels represent:
-///   - components=1  →  grayscale  →  1 byte/pixel (at 8bpc)
-///   - components=3  →  RGB       →  3 bytes/pixel
-///   - components=4  →  CMYK      →  4 bytes/pixel  → converted to RGB
-///
-/// Sub-byte bit depths (1, 2, 4 bpc) are unpacked to 8-bit before image
-/// construction.
 fn load_image_from_raw_pixels(
     data: &[u8],
     width: u32,
@@ -259,17 +241,13 @@ fn load_image_from_raw_pixels(
 
     let components = color.components as usize;
 
-    // ── Sub-byte bit depths (1, 2, 4 bpc) ──────────────────────────────
-    // These are almost always grayscale in practice. Unpack to 8-bit gray.
     if bits_per_component < 8 {
         return unpack_subbyte_image(data, width, height, bits_per_component, color);
     }
 
-    // ── 8-bit (and 16-bit) standard paths ───────────────────────────────
     let pixels = (width as usize) * (height as usize);
     let expected = pixels * components;
 
-    // Verify data length matches what we expect from the color space.
     if data.len() < expected {
         return Err(format!(
             "Image data too short for {}x{} @ {} components: got {} bytes, need {}",
@@ -283,19 +261,16 @@ fn load_image_from_raw_pixels(
 
     match components {
         1 => {
-            // Grayscale
             image::GrayImage::from_raw(width, height, data[..expected].to_vec())
                 .map(DynamicImage::ImageLuma8)
                 .ok_or_else(|| "Failed to construct grayscale image".to_string())
         }
         3 => {
-            // RGB
             image::RgbImage::from_raw(width, height, data[..expected].to_vec())
                 .map(DynamicImage::ImageRgb8)
                 .ok_or_else(|| "Failed to construct RGB image".to_string())
         }
         4 => {
-            // CMYK → convert to RGB
             let rgb_data = cmyk_to_rgb(data, pixels);
             image::RgbImage::from_raw(width, height, rgb_data)
                 .map(DynamicImage::ImageRgb8)
@@ -308,7 +283,7 @@ fn load_image_from_raw_pixels(
     }
 }
 
-/// Unpack sub-byte images (1, 2, or 4 bits per component) to 8-bit grayscale.
+
 fn unpack_subbyte_image(
     data: &[u8],
     width: u32,
@@ -331,9 +306,6 @@ fn unpack_subbyte_image(
         ));
     }
 
-    // For grayscale (components=1), unpack to 8-bit grayscale.
-    // For multi-component sub-byte, this is rare; unpack all samples
-    // and build an RGB image.
     if components == 1 {
         let mask = (1u8 << bits_per_component) - 1;
         let max_val = mask as f32;
@@ -358,8 +330,6 @@ fn unpack_subbyte_image(
                 )
             })
     } else {
-        // Multi-component sub-byte (very rare; e.g., 4-bit RGB).
-        // Skip compression — not worth the complexity risk.
         Err(format!(
             "Sub-byte multi-component images ({}-bit, {} components) are not supported",
             bits_per_component, components
@@ -367,15 +337,6 @@ fn unpack_subbyte_image(
     }
 }
 
-/// Convert CMYK raw pixel data to RGB.
-///
-/// Uses the standard subtractive color model:
-///   R = 255 × (1 - C/255) × (1 - K/255)
-///   G = 255 × (1 - M/255) × (1 - K/255)
-///   B = 255 × (1 - Y/255) × (1 - K/255)
-///
-/// This is the same formula used by Adobe products for DeviceCMYK → RGB
-/// conversion without an ICC profile.
 fn cmyk_to_rgb(data: &[u8], pixel_count: usize) -> Vec<u8> {
     let mut rgb = Vec::with_capacity(pixel_count * 3);
     for i in 0..pixel_count {
@@ -434,8 +395,6 @@ fn encode_jpeg_gray(img: &DynamicImage, quality: u8) -> Result<Vec<u8>, String> 
     Ok(out)
 }
 
-/// Compress data using zlib format (DEFLATE with zlib header/checksum).
-/// This is what PDF's FlateDecode filter expects — NOT raw DEFLATE.
 #[allow(dead_code)]
 fn zlib_compress(data: &[u8]) -> Result<Vec<u8>, String> {
     let mut encoder = ZlibEncoder::new(Vec::new(), Compression::best());

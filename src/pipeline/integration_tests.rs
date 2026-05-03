@@ -440,9 +440,6 @@ fn test_malformed_pdf() {
     );
 }
 
-/// Simulate a scanned PDF: a page with a grayscale DeviceGray image and
-/// a content stream that places it. This is the exact scenario that was
-/// producing blank pages before the fix.
 #[test]
 fn test_scanned_grayscale_pdf() {
     let dir = tempfile::tempdir().expect("Failed to create temp dir");
@@ -476,8 +473,6 @@ fn test_scanned_grayscale_pdf() {
     let reloaded =
         Document::load(&output_path).expect("Compressed scanned PDF should be loadable");
 
-    // Verify that the content stream still exists and is not empty.
-    // A blank page means the content stream was corrupted.
     let mut found_content_stream = false;
     for (_, obj) in &reloaded.objects {
         if let Object::Stream(stream) = obj {
@@ -494,7 +489,6 @@ fn test_scanned_grayscale_pdf() {
                 })
                 .unwrap_or(false);
 
-            // A stream that is NOT an image and has content → content stream
             if !has_image_subtype && !stream.content.is_empty() {
                 found_content_stream = true;
             }
@@ -510,13 +504,11 @@ fn test_scanned_grayscale_pdf() {
 fn create_scanned_grayscale_pdf(path: &Path) {
     let mut doc = Document::with_version("1.7");
 
-    // Create a 100x100 grayscale image (simulating a scanned page)
     let width: u32 = 100;
     let height: u32 = 100;
     let mut pixel_data = Vec::with_capacity((width * height) as usize);
     for y in 0..height {
         for x in 0..width {
-            // Create a gradient pattern
             pixel_data.push(((x + y) % 256) as u8);
         }
     }
@@ -534,7 +526,6 @@ fn create_scanned_grayscale_pdf(path: &Path) {
     );
     let image_id = doc.add_object(Object::Stream(image_stream));
 
-    // Content stream: place the image on the page
     let content = format!("q {} 0 0 {} 0 0 cm /Im1 Do Q", width, height);
     let content_stream = Stream::new(dictionary! {}, content.into_bytes());
     let content_id = doc.add_object(Object::Stream(content_stream));
@@ -574,8 +565,6 @@ fn create_scanned_grayscale_pdf(path: &Path) {
     doc.save(path).ok();
 }
 
-/// Simulate a colored textbook PDF: a page with a DeviceRGB image.
-/// This validates that colored images are not discolored during compression.
 #[test]
 fn test_colored_rgb_pdf() {
     let dir = tempfile::tempdir().expect("Failed to create temp dir");
@@ -605,7 +594,6 @@ fn test_colored_rgb_pdf() {
 
     let reloaded = Document::load(&output_path).expect("Compressed RGB PDF should be loadable");
 
-    // Verify content stream is intact (not blank)
     let mut found_content_stream = false;
     for (_, obj) in &reloaded.objects {
         if let Object::Stream(stream) = obj {
@@ -632,7 +620,6 @@ fn test_colored_rgb_pdf() {
         "Output PDF must have a non-empty content stream"
     );
 
-    // Verify an image with DeviceRGB color space exists in the output
     let mut found_image = false;
     for (_, obj) in &reloaded.objects {
         if let Object::Stream(stream) = obj {
@@ -662,13 +649,12 @@ fn create_colored_rgb_pdf(path: &Path) {
 
     let width: u32 = 150;
     let height: u32 = 150;
-    // Create a colorful gradient — red/green/blue bands
     let mut pixel_data = Vec::with_capacity((width * height * 3) as usize);
     for y in 0..height {
         for x in 0..width {
-            pixel_data.push(((x * 255 / width) % 256) as u8); // R
-            pixel_data.push(((y * 255 / height) % 256) as u8); // G
-            pixel_data.push((128u32 + (x + y) % 128) as u8); // B
+            pixel_data.push(((x * 255 / width) % 256) as u8);
+            pixel_data.push(((y * 255 / height) % 256) as u8);
+            pixel_data.push((128u32 + (x + y) % 128) as u8);
         }
     }
 
@@ -737,8 +723,6 @@ fn create_colored_rgb_pdf(path: &Path) {
     doc.save(path).ok();
 }
 
-/// Test CMYK image handling — these should be skipped (not compressed)
-/// because CMYK→RGBA misinterpretation causes black/discolored output.
 #[test]
 fn test_cmyk_image_pdf() {
     let dir = tempfile::tempdir().expect("Failed to create temp dir");
@@ -766,8 +750,6 @@ fn test_cmyk_image_pdf() {
     let output_path = output_dir.join("cmyk_image_compressed.pdf");
     let reloaded = Document::load(&output_path).expect("Compressed CMYK PDF should be loadable");
 
-    // Verify the CMYK image still exists with its original data intact
-    // (it should have been skipped by the compressor)
     let mut found_cmyk_image = false;
     for (_, obj) in &reloaded.objects {
         if let Object::Stream(stream) = obj {
@@ -800,14 +782,13 @@ fn create_cmyk_image_pdf(path: &Path) {
 
     let width: u32 = 80;
     let height: u32 = 80;
-    // CMYK: 4 bytes per pixel (Cyan, Magenta, Yellow, Key/Black)
     let mut pixel_data = Vec::with_capacity((width * height * 4) as usize);
     for y in 0..height {
         for x in 0..width {
-            pixel_data.push(((x * 3) % 256) as u8); // C
-            pixel_data.push(((y * 3) % 256) as u8); // M
-            pixel_data.push(100u8); // Y
-            pixel_data.push(20u8); // K
+            pixel_data.push(((x * 3) % 256) as u8);
+            pixel_data.push(((y * 3) % 256) as u8);
+            pixel_data.push(100u8);
+            pixel_data.push(20u8);
         }
     }
 

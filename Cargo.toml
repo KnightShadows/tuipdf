@@ -33,23 +33,15 @@ ratatui = { version = "0.30.0", features = ["crossterm_0_29"] }
 crossterm = "0.29.0"
 anyhow = "1.0.102"
 clap = { version = "4", features = ["derive"] }
-# MIT — PDF parsing and manipulation library
 lopdf = "0.39"
-# MIT — image decoding and encoding library
 image = "0.25"
-# MIT OR Apache-2.0 — DEFLATE compression
 flate2 = "1.0"
-# MIT OR Apache-2.0 — data parallelism library
 rayon = "1.10"
-# MIT OR Apache-2.0 — derive macro for Error trait
 thiserror = "2.0"
-# MIT OR Apache-2.0 — lightweight logging facade
 log = "0.4"
-# MIT OR Apache-2.0 — structured, contextual logging
 tracing = "0.1"
 
 
 
 [dev-dependencies]
-# MIT OR Apache-2.0 — temporary file and directory support for tests
 tempfile = "3"

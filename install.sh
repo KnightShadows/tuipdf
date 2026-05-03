@@ -6,7 +6,7 @@
 # as possible directly from your terminal.
 #
 # Authors: KnightShadows Team and individual contributors (see CONTRIBUTORS file)
-#          Aditya Anand <aditya19study@gmail.com> (c) 2025
+#          Aditya Anand <aditya19study@gmail.com> (c) 2026
 # Website: https://github.com/KnightShadows/tuipdf
 # License: MPL-2.0 (see LICENSE file)
 

@@ -5,7 +5,7 @@
 # as possible directly from your terminal.
 #
 # Authors: KnightShadows Team and individual contributors (see CONTRIBUTORS file)
-#          Aditya Anand <aditya19study@gmail.com> (c) 2025
+#          Aditya Anand <aditya19study@gmail.com> (c) 2026
 # Website: https://github.com/KnightShadows/tuipdf
 # License: MPL-2.0 (see LICENSE file)
 
@@ -13,11 +13,13 @@
 name = "tuipdf"
 version = "0.1.1"
 edition = "2024"
+rust-version = "1.85"
 description = "A beautifully crafted, terminal-native PDF compressor built in Rust"
-authors = ["Aditya Anand <adityaanand05@users.noreply.github.com>"]
+authors = ["Aditya Anand <aditya19study@gmail.com>"]
 license = "MPL-2.0"
 repository = "https://github.com/KnightShadows/tuipdf"
 homepage = "https://github.com/KnightShadows/tuipdf"
+documentation = "https://docs.rs/tuipdf"
 readme = "README.md"
 keywords = ["pdf", "compression", "tui", "terminal", "cli"]
 categories = ["command-line-utilities", "compression"]
@@ -25,8 +27,6 @@ categories = ["command-line-utilities", "compression"]
 [[bin]]
 name = "tuipdf"
 path = "src/main.rs"
-
-
 
 [dependencies]
 ratatui = { version = "0.30.0", features = ["crossterm_0_29"] }
@@ -40,8 +40,6 @@ rayon = "1.10"
 thiserror = "2.0"
 log = "0.4"
 tracing = "0.1"
-
-
 
 [dev-dependencies]
 tempfile = "3"

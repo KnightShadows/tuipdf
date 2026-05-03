@@ -70,6 +70,11 @@ The pipeline is implemented in **pure Rust** with a color-space-aware, per-objec
 
 ### Quick Start
 
+**Cargo (crates.io):**
+```bash
+cargo install tuipdf
+```
+
 **Windows (PowerShell):**
 ```powershell
 irm https://raw.githubusercontent.com/KnightShadows/tuipdf/main/install_windows.ps1 | iex

@@ -29,6 +29,14 @@
 
 For immediate deployment, we maintain official installation scripts that automatically resolve dependencies, clone the source, and compile the binary.
 
+### Cargo (crates.io)
+
+If you already have a Rust toolchain installed, you can pull the latest release directly from crates.io:
+
+```bash
+cargo install tuipdf
+```
+
 ### Windows (PowerShell)
 
 The Windows deployment script automatically detects Rust and CMake (installing CMake via `winget` if missing), and provisions the binary into your Cargo path.
